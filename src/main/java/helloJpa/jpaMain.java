@@ -4,10 +4,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import helloJpa.KeyInfo;
 import java.util.List;
 import java.util.Map;
 
 public class jpaMain {
+    /*
     public static void main(String[] args) {
         // EntityManagerFactory 는 실행지점에 하나만 생성해야함.
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello"); // persistence.xml의 name속성을 가져오기
@@ -21,7 +23,7 @@ public class jpaMain {
             // insert
             // Member member = new Member();
             // member.setId(2l);
-            // member.setName("HelloB");
+            // member.setUserName("HelloB");
             // entityManager.persist(member);
 
             // get
@@ -31,7 +33,7 @@ public class jpaMain {
 
             // update
             // Member m = entityManager.find(Member.class, 1l);
-            // m.setName("NNNN"); // 자바 객체에서 값만 바꾸어도 저장이 됨.
+            // m.setUserName("NNNN"); // 자바 객체에서 값만 바꾸어도 저장이 됨.
 
             // delete
             // Member m = entityManager.find(Member.class, 1l);
@@ -52,7 +54,7 @@ public class jpaMain {
             // 비영속
             Member m = new Member();
             m.setId(14L);
-            m.setName("persistence");
+            m.setUserName("persistence");
 
             // 영속
             System.out.println("before persist");
@@ -81,7 +83,7 @@ public class jpaMain {
 
             // 변경 감지
             // Member m105 = entityManager.find(Member.class, 105l);
-            // m105.setName("new_name22"); // persist를 안해도 commit단계에서 업데이트가 진행됨.
+            // m105.setUserName("new_name22"); // persist를 안해도 commit단계에서 업데이트가 진행됨.
             // System.out.println("---------");
 
             // flush - entityManager.flush로 직접호출 / transaction 단계에서 자동 호출 / jpql에서 자동 호출
@@ -93,8 +95,10 @@ public class jpaMain {
 
             // 준영속 상태
             Member m200 = entityManager.find(Member.class, 200l);
-            m200.setName("ZZZZ");
-            entityManager.detach(m200); // 이후에 커밋하여도 업데이트 쿼리가 발생하지 않음, 특정 엔티티만 준영속화
+            if (m200 != null) {
+                m200.setUserName("ZZZZ");
+                entityManager.detach(m200); // 이후에 커밋하여도 업데이트 쿼리가 발생하지 않음, 특정 엔티티만 준영속화
+            }
             // entityManager.clear(); // 모든 영속성 엔티티를 준영속화
 
             entityTransaction.commit(); // 커밋하는 시점에서 데이터 변경을 확인하고, 변경이 된 데이터는 업데이트가 진행된다/
@@ -107,6 +111,40 @@ public class jpaMain {
 
 
 
+        emf.close();
+    }
+    */
+    // entitiy mapping main
+    public static void main(String[] args) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        try {
+            /*
+            Member m = Member
+                    .builder()
+                    .id(1005L)
+                    .age(29)
+                    .userName("B")
+                    .roleType(RoleType.USER)
+                    .build();
+            em.persist(m);
+            */
+            KeyInfo keyInfo = KeyInfo
+                    .builder()
+                    //.id("dddd") // @generatedValue인 경우에는 직접 세팅을 하지 않아야함.
+                    .build();
+            em.persist(keyInfo);
+            // identity인 경우에는 insert 이후에 pk를 가져오고, sequence인 경우에는 insert 는 하지 않고 seq만 호출.
+            System.out.println("==== before transaction commit and pk of key_info is : " + keyInfo.getId());
+            tx.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            tx.rollback();
+        } finally {
+            em.close();
+        }
         emf.close();
     }
 }
