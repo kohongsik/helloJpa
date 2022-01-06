@@ -1,4 +1,4 @@
-package helloJpa;
+package helloJpa.practicePart1;
 
 import jdk.nashorn.internal.runtime.logging.Logger;
 import lombok.Builder;

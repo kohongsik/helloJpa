@@ -4,9 +4,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import helloJpa.KeyInfo;
-import java.util.List;
-import java.util.Map;
+import helloJpa.practicePart1.KeyInfo;
+import helloJpa.practicePart3.Member3;
+import helloJpa.practicePart3.Team3;
 
 public class jpaMain {
     /*
@@ -115,13 +115,14 @@ public class jpaMain {
     }
     */
     // entitiy mapping main
+    /*
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         try {
-            /*
+            *//*
             Member m = Member
                     .builder()
                     .id(1005L)
@@ -130,7 +131,7 @@ public class jpaMain {
                     .roleType(RoleType.USER)
                     .build();
             em.persist(m);
-            */
+            *//*
             KeyInfo keyInfo = KeyInfo
                     .builder()
                     //.id("dddd") // @generatedValue인 경우에는 직접 세팅을 하지 않아야함.
@@ -146,5 +147,34 @@ public class jpaMain {
             em.close();
         }
         emf.close();
+    }*/
+    // 연관관계 매핑
+    public static void main(String[] args) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        try {
+            Team3 team3 = Team3.builder().name("TeamA").build();
+            em.persist(team3);
+
+            Member3 member3 = Member3.builder().userName("Membber1").team3(team3).build();
+            em.persist(member3);
+            em.flush();
+            Team3 t = em.find(Team3.class, 3l);
+
+            System.out.println("member id is : " + member3.getId());
+            System.out.println("before changed team name is : " + member3.getTeam3().getId());
+            member3.setTeam3(t);
+            System.out.println("after changed team name is : " + member3.getTeam3().getId());
+            tx.commit();
+        } catch(Exception e) {
+            e.printStackTrace();
+            tx.rollback();
+        } finally {
+            em.close();
+        }
+        emf.close();
+
     }
 }
