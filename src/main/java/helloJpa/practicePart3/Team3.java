@@ -2,10 +2,9 @@ package helloJpa.practicePart3;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,4 +18,8 @@ public class Team3 {
     @Column(name="TEAM_ID")
     private Long id;
     private String name;
+    // @OneToMany(mappedBy = "team3")
+    @OneToMany
+    @JoinColumn(name="TEAM_ID")
+    private List<Member3> members3 = new ArrayList<>();
 }

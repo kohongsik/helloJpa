@@ -5,8 +5,16 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import helloJpa.practicePart1.KeyInfo;
+import helloJpa.practicePart3.Locker3;
 import helloJpa.practicePart3.Member3;
 import helloJpa.practicePart3.Team3;
+import helloJpa.practicePart4.Album;
+import helloJpa.practicePart4.Item;
+import helloJpa.practicePart4.Movie;
+import org.h2.mvstore.tx.Transaction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class jpaMain {
     /*
@@ -149,24 +157,38 @@ public class jpaMain {
         emf.close();
     }*/
     // 연관관계 매핑
-    public static void main(String[] args) {
+   /* public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         try {
-            Team3 team3 = Team3.builder().name("TeamA").build();
-            em.persist(team3);
-
-            Member3 member3 = Member3.builder().userName("Membber1").team3(team3).build();
-            em.persist(member3);
-            em.flush();
-            Team3 t = em.find(Team3.class, 3l);
-
-            System.out.println("member id is : " + member3.getId());
-            System.out.println("before changed team name is : " + member3.getTeam3().getId());
-            member3.setTeam3(t);
-            System.out.println("after changed team name is : " + member3.getTeam3().getId());
+            Member3 m1 = Member3.builder().userName("ASD1").build();
+            Member3 m2 = Member3.builder().userName("ASD2").build();
+            Member3 m3 = Member3.builder().userName("ASD3").build();
+            Member3 m4 = Member3.builder().userName("ASD4").build();
+            Member3 m5 = Member3.builder().userName("ASD5").build();
+            Team3 t = Team3.builder().name("JPA Good").members3(new ArrayList<>()).build();
+            Locker3 locker3 = Locker3.builder().name("MY LOCKER").build();
+            em.persist(locker3);
+            m5.setLocker3(locker3);
+            em.persist(m1);
+            em.persist(m2);
+            em.persist(m3);
+            em.persist(m4);
+            em.persist(m5);
+            em.persist(t);
+            t.getMembers3().add(m1);
+            t.getMembers3().add(m2);
+            t.getMembers3().add(m2);
+            t.getMembers3().add(m3);
+            t.getMembers3().add(m4);
+            System.out.println("t.id is " + t.getId());
+            Team3 team = em.find(Team3.class, t.getId());
+            List<Member3> member3List = team.getMembers3();
+            for (Member3 m : member3List) {
+                System.out.println("member name is : " + m.getUserName());
+            }
             tx.commit();
         } catch(Exception e) {
             e.printStackTrace();
@@ -175,6 +197,39 @@ public class jpaMain {
             em.close();
         }
         emf.close();
+    }*/
+    public static void main(String[] args) {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        try {
+            Movie movie = new Movie();
+            movie.setDirector("A");
+            movie.setActor("B");
+            movie.setPrice(100);
+            movie.setName("바람과 함께 사라지다.");
 
+            // Album album = Album.builder().artist("album artist").build();
+            Album album = new Album();
+            album.setArtist("SOME ONE");
+            album.setName("queen");
+            album.setPrice(300);
+
+            em.persist(movie);
+            em.persist(album);
+            /*em.flush();
+            em.close();
+            Movie movieFind = em.find(Movie.class, movie.getId());
+            System.out.println("new : " + movieFind.getName());*/
+            tx.commit();
+        }catch (Exception e) {
+            e.printStackTrace();
+            tx.rollback();
+        } finally {
+            em.close();
+        }
+        emf.close();
     }
+
 }
